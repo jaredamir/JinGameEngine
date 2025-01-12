@@ -1,22 +1,22 @@
-import {Entity} from './entity';
+//import { Entity } from './entity';
 
-export class Player extends Entity {
-  constructor(x, y, name, speed, healthCapacity) {
-    super(x, y, name);
+//export 
+class Player extends Entity {
+  constructor(x, y, name, speed, healthCapacity, regenerationRate) {
+    super(x, y, name, healthCapacity, regenerationRate); 
     this.type = "player";
     this.speed = speed;
-    this.name = name;
     this.inventory = [];
   }
 
   info() {
+    const baseInfo = super.info(); 
     return {
-        id: this.id,
-        x: this.x,
-        y: this.y,
-        name: this.name,
-        type: this.type,
-    }
+      ...baseInfo,
+      type: this.type,
+      speed: this.speed,
+      inventory: this.inventory, 
+    };
   }
 
   render() {

@@ -1,4 +1,5 @@
-export class Entity {
+//export 
+class Entity {
   constructor(x, y, name, healthCapacity, regenerationRate) {
     this.id = Math.random();
     this.x = x;
@@ -9,7 +10,7 @@ export class Entity {
     this.regenerationRate = regenerationRate;
   }
   
-  entityInfo() {
+  info() {
     return {
         id: this.id,
         x: this.x,
