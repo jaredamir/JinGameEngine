@@ -13,27 +13,7 @@ const yDirection = 1;
 let paused = false;
 
 const debugInfo = document.getElementById('debugInfo');
-/*
-{
-camera: {
-},
-loadedAssets: {
 
-},
-spawnedEntities: [
-player: {},
-etc
-],
-loadedChunks: [
-chunk: {
-  interactedItems: [  {x: 0, y: 0, item: {}}, {x: 0, y: 0, item: {}} ],
-}
-],
-world: { },
-
-
-
-*/
 
 
 const blockDetails_0_1 = {
@@ -87,7 +67,8 @@ let debuggerInstance;
 let blockAsset;
 let offsetX = 0;
 let offsetY = 0;
-let cameraSpeed = 20;
+let baseCameraSpeed = 20;
+let cameraSpeed = baseCameraSpeed;
 let camera;
 let mouseX;
 let mouseY;
@@ -155,28 +136,19 @@ function cameraMove() {
     }
 }
 
+function cameraAcceleration(camera, keys) {
+    if (keys.ArrowLeft || keys.ArrowRight) {
+        camera.speed += .05;
+    } else { 
+        camera.speed = baseCameraSpeed
+    }
+}
+
 
 function loadAssets(){
     blockAsset = blockDetails_0_1; // Will replace with actual asset loading
 }
 
-let generateChunk;
-function setUp() {
-    loadAssets();
-    camera = new Camera(0, 0, cameraSpeed);
-    world = new World(ctx, 'world', origin, aspectRatio, blockSize, canvas.width, canvas.height, 0, blockAsset, chunkSizeX, chunkSizeY);
-    debuggerInstance = new Debugger();
-    /*
-    geratedChunk = world.generateChunk(1);
-    geratedChunk2 = world.generateChunk(2);
-    world.addChunk(chunk);
-    world.addChunk(geratedChunk);
-    world.addChunk(geratedChunk2);
-    */
-    //debuggerInstance.add({"test": "test"});
-    
-   return
-}
 
 function addDebugInfo(infoObject) {
     debugInfo.innerHTML = Object.entries(infoObject)
@@ -192,9 +164,30 @@ function renderChunksOnEnter(chunkNumbers) {
     };
 };
 
+
+function setUp() {
+    loadAssets();
+    camera = new Camera(0, 0, cameraSpeed);
+    world = new World(
+        ctx, 
+        'First World', 
+        origin, 
+        aspectRatio, 
+        blockSize, 
+        canvas.width, 
+        canvas.height, 
+        0, 
+        blockAsset, 
+        chunkSizeX, 
+        chunkSizeY
+    );
+    debuggerInstance = new Debugger();
+    //world.addChunk(chunk);
+    //debuggerInstance.add({"test": "test"});
+   return
+}
 function start() {
     world.renderBackground("lightblue");
-    //world.renderChunk(geratedChunk, camera.x, camera.y);
     world.renderWorld(camera.x, camera.y)
     cameraMove();
     addDebugInfo({
@@ -206,8 +199,11 @@ function start() {
         "CurrentBlockX": Math.floor((camera.x)/ blockSize) * -1,
         "CurrentBlockY": Math.floor((camera.y)/ blockSize) * -1,
         "CurrentChunk": Math.floor((Math.floor((camera.x)/ blockSize) * -1)/ chunkSizeX),
-        "Loaded Chunk Numbers": world.getLoadedChunkNumbers()
+        "Loaded Chunk Numbers": world.getLoadedChunkNumbers(),
+        "Camera Speed": camera.speed
     });
+    cameraAcceleration(camera, keys);
+
     renderChunksOnEnter(world.getLoadedChunkNumbers());
     console.log("loop");
     if(!states.paused) requestAnimationFrame(start);
