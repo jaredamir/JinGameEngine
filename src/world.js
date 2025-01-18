@@ -73,7 +73,7 @@ class World {
 
   renderWorld(offsetX=0, offsetY=0) {
     for (let i = 0; i < this.loadedChunks.length; i++) {
-        this.renderChunk(this.loadedChunks[i], offsetX+(i*this.chunkSizeX*this.blockSize), offsetY);
+        this.renderChunk(this.loadedChunks[i], offsetX+(this.loadedChunks[i].chunkNumber*this.chunkSizeX*this.blockSize), offsetY);
     }
   }
   generateChunk(chunkNumber) {

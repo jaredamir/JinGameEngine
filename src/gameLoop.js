@@ -165,7 +165,7 @@ function setUp() {
     loadAssets();
     camera = new Camera(0, 0, cameraSpeed);
     world = new World(ctx, 'world', origin, aspectRatio, blockSize, canvas.width, canvas.height, 0, blockAsset, chunkSizeX, chunkSizeY);
-    //debuggerInstance = new Debugger();
+    debuggerInstance = new Debugger();
     /*
     geratedChunk = world.generateChunk(1);
     geratedChunk2 = world.generateChunk(2);
