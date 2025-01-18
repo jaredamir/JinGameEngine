@@ -190,7 +190,7 @@ function renderChunksOnEnter(chunkNumbers) {
 };
 
 function start() {
-    world.renderBackground("black");
+    world.renderBackground("lightblue");
     //world.renderChunk(geratedChunk, camera.x, camera.y);
     world.renderWorld(camera.x, camera.y)
     cameraMove();
