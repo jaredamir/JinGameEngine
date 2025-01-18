@@ -3,14 +3,15 @@ const origin = { x: 0, y: 0 };
 const canvas = document.getElementById('game');
 const canvasWidth = canvas.width;
 const chunkSizeX = 10;
-const chunkSizeY = 40;
+const chunkSizeY = 400;
 const blockScale = 1;
 const aspectRatio = 16 / 9;
 const blockSize = (canvasWidth / chunkSizeX) * blockScale;
 const ctx = canvas.getContext('2d');
 const xDirection = 1;
 const yDirection = 1;
-let paused = false;
+const renderDistance = 4;
+
 
 const debugInfo = document.getElementById('debugInfo');
 
@@ -62,6 +63,7 @@ const chunk = {
     }
 }
 
+let paused = false;
 let world;
 let debuggerInstance;
 let blockAsset;
@@ -179,7 +181,8 @@ function setUp() {
         0, 
         blockAsset, 
         chunkSizeX, 
-        chunkSizeY
+        chunkSizeY,
+        renderDistance,
     );
     debuggerInstance = new Debugger();
     //world.addChunk(chunk);

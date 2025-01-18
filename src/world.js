@@ -16,7 +16,8 @@ class World {
     id,
     blockAsset,
     chunkSizeX,
-    chunkSizeY
+    chunkSizeY,
+    renderDistance, 
 ) {
     console.log("World Initiated");
     this.name = name;
@@ -31,6 +32,7 @@ class World {
     this.blockAsset = blockAsset;
     this.chunkSizeX = chunkSizeX;
     this.chunkSizeY = chunkSizeY;
+    this.renderDistance = renderDistance;
   }
 
   info() {
@@ -50,11 +52,19 @@ class World {
       //if there is a chunk and the chunk is less than the first one in the array, add to the beginning, else, add to the end
       if(chunk.chunkNumber < this.loadedChunks[0].chunkNumber) {
         this.loadedChunks.unshift(chunk);
+        if(this.loadedChunks.length > this.renderDistance) {
+          //keep the loaded chunks to a minimum by removing from the end after adding to the beginning
+          this.loadedChunks.pop()
+        }
         console.log("Chunk Added to beginning");
         return
       } 
     } 
     this.loadedChunks.push(chunk);
+    if(this.loadedChunks.length > this.renderDistance) {
+      //keep the loaded chunks to a minimum by removing from the beginning after adding to the end
+      this.loadedChunks.shift()
+    }
     console.log("Chunk Added to end");
     return
   }
