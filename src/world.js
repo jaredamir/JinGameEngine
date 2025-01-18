@@ -44,8 +44,24 @@ class World {
   }
 
   addChunk(chunk) {
-    console.log("Chunk Added");
+    if (this.loadedChunks.length > 0 ) {
+      //if there is a chunk and the chunk is less than the first one in the array, add to the beginning, else, add to the end
+      if(chunk.chunkNumber < this.loadedChunks[0].chunkNumber) {
+        this.loadedChunks.unshift(chunk);
+        console.log("Chunk Added to beginning");
+        return
+      } 
+    } 
     this.loadedChunks.push(chunk);
+    console.log("Chunk Added to end");
+    return
+  }
+
+  getLoadedChunkNumbers() {
+    return this.loadedChunks.map(chunk => {
+      if (chunk.chunkNumber != null) return chunk.chunkNumber
+      return;
+    });
   }
 
   renderBackground(color) {
@@ -58,9 +74,8 @@ class World {
         this.renderChunk(this.loadedChunks[i], offsetX+(i*this.chunkSize*this.blockSize), offsetY/*+(i*this.chunkSize*this.blockSize)*/);
     }
   }
-  generateChunk(chunkOrigin) {
+  generateChunk(chunkNumber) {
     const chunkData = []; 
-    console.log("chunk size", this.chunkSize);
     for (let y = 0; y < this.chunkSize; y++) {
         let row = [];
         for (let x = 0; x < this.chunkSize; x++) { 
@@ -68,19 +83,18 @@ class World {
         }
         chunkData.push(row);
     }
-    console.log("ChunkData", chunkData);
     return {
-        origin: chunkOrigin,
+        chunkNumber: chunkNumber,
         data: chunkData,
         interactedItems: {}
     }
   }
 
   renderChunk(chunk, offsetX=0, offsetY=0) {
-    const chunkOrigin = chunk.origin;
+    const chunkNumber = chunk.chunkNumber;
     const chunkData = chunk.data;
-    for (let y = chunkOrigin.y; y < chunkData.length; y++) {
-       for (let x = chunkOrigin.x; x < chunkData[y].length; x++) {
+    for (let y = 0; y < chunkData.length; y++) {
+       for (let x = 0; x < chunkData[y].length; x++) {
         if(`${x},${y}` in chunk.interactedItems && chunk.interactedItems[`${x},${y}`].block !== 0){
             //cached items
             const block = new Block(

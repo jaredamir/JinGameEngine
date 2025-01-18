@@ -63,7 +63,7 @@ const blockDetails_0_1 = {
 }
 
 const chunk = {
-    origin: { x: 0, y: 0 },
+    chunkNumber: 0,
     data: [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -165,8 +165,8 @@ function setUp() {
     camera = new Camera(0, 0, cameraSpeed);
     world = new World(ctx, 'world', origin, aspectRatio, blockSize, canvas.width, canvas.height, 0, blockAsset, chunkSize);
     //debuggerInstance = new Debugger();
-    geratedChunk = world.generateChunk({ x: 0, y: 0 });
-    geratedChunk2 = world.generateChunk({ x: 0, y: 0 });
+    geratedChunk = world.generateChunk(1);
+    geratedChunk2 = world.generateChunk(2);
     world.addChunk(chunk);
     world.addChunk(geratedChunk);
     world.addChunk(geratedChunk2);
@@ -180,6 +180,15 @@ function addDebugInfo(infoObject) {
         .map(([key, value]) => `${key}: ${value}`)
         .join('<br>');
 }
+
+function renderChunksOnEnter(chunkNumbers) {
+    //if the current chunk is not in the loaded chunks then generate and add a new chunk
+    currentChunk = Math.floor((Math.floor((camera.x)/ blockSize) * -1)/ chunkSize);
+    if (chunkNumbers && !chunkNumbers.includes(currentChunk)) {
+        world.addChunk(world.generateChunk(currentChunk));
+    };
+};
+
 function start() {
     world.renderBackground("black");
     //world.renderChunk(geratedChunk, camera.x, camera.y);
@@ -194,7 +203,9 @@ function start() {
         "CurrentBlockX": Math.floor((camera.x)/ blockSize) * -1,
         "CurrentBlockY": Math.floor((camera.y)/ blockSize) * -1,
         "CurrentChunk": Math.floor((Math.floor((camera.x)/ blockSize) * -1)/ chunkSize),
+        "Loaded Chunk Numbers": world.getLoadedChunkNumbers()
     });
+    renderChunksOnEnter(world.getLoadedChunkNumbers());
     console.log("loop");
     if(!states.paused) requestAnimationFrame(start);
     return
