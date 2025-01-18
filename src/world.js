@@ -15,6 +15,7 @@ class World {
     canvasHeight,
     id,
     blockAsset,
+    chunkSize
 ) {
     console.log("World Initiated");
     this.name = name;
@@ -27,6 +28,7 @@ class World {
     this.canvasWidth = canvasWidth;
     this.canvasHeight = canvasHeight;
     this.blockAsset = blockAsset;
+    this.chunkSize = chunkSize;
   }
 
   info() {
@@ -46,15 +48,57 @@ class World {
     this.loadedChunks.push(chunk);
   }
 
-  renderChunk(chunk) {
-    console.log("Chunk Rendered");
+  renderBackground() {
+    ctx.fillStyle = 'green'; 
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+
+  renderWorld(offsetX=0, offsetY=0) {
+    for (let i = 0; i < this.loadedChunks.length; i++) {
+        this.renderChunk(this.loadedChunks[i], offsetX+(i*this.chunkSize*this.blockSize), offsetY+(i*this.chunkSize*this.blockSize));
+    }
+  }
+  generateChunk(chunkOrigin) {
+    const chunkData = []; 
+    console.log("chunk size", this.chunkSize);
+    for (let y = 0; y < this.chunkSize; y++) {
+        let row = [];
+        for (let x = 0; x < this.chunkSize; x++) { 
+            row.push(Math.floor(Math.random()*5)) //need to replace with actual block generation
+        }
+        chunkData.push(row);
+    }
+    console.log("ChunkData", chunkData);
+    return {
+        origin: chunkOrigin,
+        data: chunkData,
+        interactedItems: {}
+    }
+  }
+
+  renderChunk(chunk, offsetX=0, offsetY=0) {
     const chunkOrigin = chunk.origin;
     const chunkData = chunk.data;
     for (let y = chunkOrigin.y; y < chunkData.length; y++) {
        for (let x = chunkOrigin.x; x < chunkData[y].length; x++) {
-        if(chunkData[y][x] !== 0){
-            const block = new Block(x * this.blockSize, y * this.blockSize, this.blockAsset[chunkData[y][x]]);
+        if(`${x},${y}` in chunk.interactedItems && chunk.interactedItems[`${x},${y}`].block !== 0){
+            //cached items
+            const block = new Block(
+                (x * this.blockSize) + offsetX, 
+                (y * this.blockSize) + offsetY, 
+                this.blockAsset[chunk.interactedItems[`${x},${y}`].block]
+            );
             block.render(this.canvas, this.blockSize);
+        }else {
+            //none cached items from regular chunk data
+            if(chunkData[y][x] !== 0){
+                const block = new Block(
+                    (x * this.blockSize) + offsetX, 
+                    (y * this.blockSize) + offsetY, 
+                    this.blockAsset[chunkData[y][x]]
+                );
+                block.render(this.canvas, this.blockSize);
+            }
         }
        }
       }

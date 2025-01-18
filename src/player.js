@@ -3,10 +3,11 @@
 //export 
 class Player extends Entity {
   constructor(x, y, name, speed, healthCapacity, regenerationRate) {
-    super(x, y, name, healthCapacity, regenerationRate); 
+    super(x, y, name, healthCapacity, inventory, regenerationRate, health); 
     this.type = "player";
     this.speed = speed;
-    this.inventory = [];
+    this.inventory = inventory;
+    this.health = health
   }
 
   info() {
@@ -16,7 +17,9 @@ class Player extends Entity {
       type: this.type,
       speed: this.speed,
       inventory: this.inventory, 
+      health: this.health 
     };
+
   }
 
   render() {

@@ -9,6 +9,7 @@ class Block extends Entity {
         this.y = y;
         this.name = blockData.name;
         this.color = blockData.color;
+        this.healthCapacity = blockData.healthCapacity;
     }
 
     info() {
