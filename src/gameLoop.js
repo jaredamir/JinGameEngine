@@ -105,23 +105,54 @@ function pauseGame() {
 }
 
 
-window.addEventListener('mousemove', (e) => {
-    const rect = canvas.getBoundingClientRect();
-    mouseX = e.clientX - rect.left;
-    mouseY = e.clientY - rect.top;
-});
+function initializeEventListeners() {
+    //mouse move and click
+    window.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        mouseX = e.clientX - rect.left;
+        mouseY = e.clientY - rect.top;
+    });
 
-window.addEventListener('keydown', (e) => {
-    if (e.key === 'p') {
-        pauseGame();
-    }
-    keys[e.key] = true;
-});
+    window.addEventListener('contextmenu', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const inCanvas = mouseX >= 0 && mouseX <= rect.width && mouseY >= 0 && mouseY <= rect.height;
+        if (inCanvas) {
+            e.preventDefault(); 
+        }
+    });
+
+    window.addEventListener('mousedown', (e) => {
+        e.preventDefault(); 
+        if (e.button === 0) {
+            world.deleteBlock(
+                Math.max(0, Math.min(mouseX, canvas.width)),
+                Math.max(0, Math.min(mouseY, canvas.height)),
+                camera,
+            );
+        } else if (e.button === 2) {
+            world.addBlock(
+                Math.max(0, Math.min(mouseX, canvas.width)),
+                Math.max(0, Math.min(mouseY, canvas.height)),
+                camera,
+                2
+            );
+        }
+    });
+
+    //key presses
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'p') {
+            pauseGame();
+        }
+        keys[e.key] = true;
+    });
 
 
-window.addEventListener('keyup', (e) => {
-    keys[e.key] = false;
-});
+    window.addEventListener('keyup', (e) => {
+        keys[e.key] = false;
+    });
+
+}
 
 function cameraMove() {
     if (keys['ArrowUp']) {
@@ -184,9 +215,7 @@ function setUp() {
         chunkSizeY,
         renderDistance,
     );
-    debuggerInstance = new Debugger();
-    //world.addChunk(chunk);
-    //debuggerInstance.add({"test": "test"});
+    initializeEventListeners()
    return
 }
 function start() {

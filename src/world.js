@@ -92,11 +92,11 @@ class World {
   }
   currentBlock(objectX, objectY, camera) {
     try {
-      const mouseChunk = this.objectPosOverChunk(objectX, camera);
+      const objectChunk = this.objectPosOverChunk(objectX, camera);
       const indexes = this.objectPosOverBlock(objectX, objectY, camera);
       const x = indexes[0];
       const y = indexes[1];
-      const index = this.loadedChunks.findIndex(chunk => chunk.chunkNumber === mouseChunk);
+      const index = this.loadedChunks.findIndex(chunk => chunk.chunkNumber === objectChunk);
       return this.loadedChunks[index].data[y][x]
     } catch (e) {
       console.log(e)
@@ -129,6 +129,37 @@ class World {
         chunkNumber: chunkNumber,
         data: chunkData,
         interactedItems: {}
+    }
+  } 
+  deleteBlock(objectX, objectY, camera){
+    try {
+      const objectChunk = this.objectPosOverChunk(objectX, camera);
+      const indexes = this.objectPosOverBlock(objectX, objectY, camera);
+      const x = indexes[0];
+      const y = indexes[1];
+      const index = this.loadedChunks.findIndex(chunk => chunk.chunkNumber === objectChunk);
+      this.loadedChunks[index].data[y][x] = 0;
+      return
+    } catch (e) {
+      console.log(e)
+      return "could not find"
+    }
+  }
+
+  addBlock(objectX, objectY, camera, selectedBlockIndex){
+    try {
+      const objectChunk = this.objectPosOverChunk(objectX, camera);
+      const indexes = this.objectPosOverBlock(objectX, objectY, camera);
+      const x = indexes[0];
+      const y = indexes[1];
+      const index = this.loadedChunks.findIndex(chunk => chunk.chunkNumber === objectChunk);
+      if (this.loadedChunks[index].data[y][x] == 0){
+        this.loadedChunks[index].data[y][x] = selectedBlockIndex;
+      }
+      return
+    } catch (e) {
+      console.log(e)
+      return "could not find"
     }
   }
 
