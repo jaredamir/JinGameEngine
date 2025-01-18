@@ -34,7 +34,7 @@ class World {
     this.chunkSizeY = chunkSizeY;
     this.renderDistance = renderDistance;
   }
-
+  //DATA
   info() {
     return {
       name: this.name,
@@ -75,6 +75,36 @@ class World {
       return;
     });
   }
+
+  mousePosOverChunk(mouseX, camera) {
+    return Math.floor((camera.x - mouseX) / (this.chunkSizeX * this.blockSize)*-1)
+  }
+  mousePosOverBlock(mouseX, mouseY, camera) {
+    const worldX = (mouseX / this.blockSize) - (camera.x / this.blockSize);
+    const worldY = (mouseY / this.blockSize) - (camera.y / this.blockSize);
+
+    const blockX = Math.floor(worldX);
+    const blockY = Math.floor(worldY);
+
+    const blockInChunkX = ((blockX % this.chunkSizeX) + this.chunkSizeX) % this.chunkSizeX;
+
+    return [blockInChunkX, blockY]
+  }
+  currentBlock(mouseX, mouseY, camera) {
+    try {
+      const mouseChunk = this.mousePosOverChunk(mouseX, camera);
+      const indexes = this.mousePosOverBlock(mouseX, mouseY, camera);
+      const x = indexes[0];
+      const y = indexes[1];
+      const index = this.loadedChunks.findIndex(chunk => chunk.chunkNumber === mouseChunk);
+      return this.loadedChunks[index].data[y][x]
+    } catch (e) {
+      console.log(e)
+      return "could not find"
+    }
+  }
+
+  //RENDERING
 
   renderBackground(color) {
     ctx.fillStyle = color; 

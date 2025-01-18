@@ -139,7 +139,7 @@ function cameraMove() {
 }
 
 function cameraAcceleration(camera, keys) {
-    if (keys.ArrowLeft || keys.ArrowRight) {
+    if (keys.ArrowLeft || keys.ArrowRight || keys.ArrowUp || keys.ArrowDown) {
         camera.speed += .05;
     } else { 
         camera.speed = baseCameraSpeed
@@ -199,11 +199,17 @@ function start() {
         "cameraY": camera.y,
         "MouseX": Math.max(0, Math.min(mouseX, canvas.width)),
         "MouseY": Math.max(0, Math.min(mouseY, canvas.height)),
-        "CurrentBlockX": Math.floor((camera.x)/ blockSize) * -1,
-        "CurrentBlockY": Math.floor((camera.y)/ blockSize) * -1,
         "CurrentChunk": Math.floor((Math.floor((camera.x)/ blockSize) * -1)/ chunkSizeX),
         "Loaded Chunk Numbers": world.getLoadedChunkNumbers(),
-        "Camera Speed": camera.speed
+        "Camera Speed": camera.speed,
+        "Mouse Chunk": world.mousePosOverChunk(mouseX, camera),
+        "Mouse Pos over block": world.mousePosOverBlock(
+            Math.max(0, Math.min(mouseX, canvas.width)), 
+            Math.max(0, Math.min(mouseY, canvas.height)),
+            camera
+        ),
+        "current Block index": world.currentBlock(mouseX, mouseY, camera),
+        "current Block name": blockAsset[world.currentBlock(mouseX, mouseY, camera)]?.name
     });
     cameraAcceleration(camera, keys);
 
