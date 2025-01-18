@@ -2,10 +2,11 @@
 const origin = { x: 0, y: 0 };
 const canvas = document.getElementById('game');
 const canvasWidth = canvas.width;
-const chunkSize = 10;
+const chunkSizeX = 10;
+const chunkSizeY = 40;
 const blockScale = 1;
 const aspectRatio = 16 / 9;
-const blockSize = (canvasWidth / chunkSize) * blockScale;
+const blockSize = (canvasWidth / chunkSizeX) * blockScale;
 const ctx = canvas.getContext('2d');
 const xDirection = 1;
 const yDirection = 1;
@@ -163,13 +164,15 @@ let generateChunk;
 function setUp() {
     loadAssets();
     camera = new Camera(0, 0, cameraSpeed);
-    world = new World(ctx, 'world', origin, aspectRatio, blockSize, canvas.width, canvas.height, 0, blockAsset, chunkSize);
+    world = new World(ctx, 'world', origin, aspectRatio, blockSize, canvas.width, canvas.height, 0, blockAsset, chunkSizeX, chunkSizeY);
     //debuggerInstance = new Debugger();
+    /*
     geratedChunk = world.generateChunk(1);
     geratedChunk2 = world.generateChunk(2);
     world.addChunk(chunk);
     world.addChunk(geratedChunk);
     world.addChunk(geratedChunk2);
+    */
     //debuggerInstance.add({"test": "test"});
     
    return
@@ -183,7 +186,7 @@ function addDebugInfo(infoObject) {
 
 function renderChunksOnEnter(chunkNumbers) {
     //if the current chunk is not in the loaded chunks then generate and add a new chunk
-    currentChunk = Math.floor((Math.floor((camera.x)/ blockSize) * -1)/ chunkSize);
+    currentChunk = Math.floor((Math.floor((camera.x)/ blockSize) * -1)/ chunkSizeX);
     if (chunkNumbers && !chunkNumbers.includes(currentChunk)) {
         world.addChunk(world.generateChunk(currentChunk));
     };
@@ -202,7 +205,7 @@ function start() {
         "MouseY": Math.max(0, Math.min(mouseY, canvas.height)),
         "CurrentBlockX": Math.floor((camera.x)/ blockSize) * -1,
         "CurrentBlockY": Math.floor((camera.y)/ blockSize) * -1,
-        "CurrentChunk": Math.floor((Math.floor((camera.x)/ blockSize) * -1)/ chunkSize),
+        "CurrentChunk": Math.floor((Math.floor((camera.x)/ blockSize) * -1)/ chunkSizeX),
         "Loaded Chunk Numbers": world.getLoadedChunkNumbers()
     });
     renderChunksOnEnter(world.getLoadedChunkNumbers());

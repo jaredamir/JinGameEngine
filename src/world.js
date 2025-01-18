@@ -15,7 +15,8 @@ class World {
     canvasHeight,
     id,
     blockAsset,
-    chunkSize
+    chunkSizeX,
+    chunkSizeY
 ) {
     console.log("World Initiated");
     this.name = name;
@@ -28,7 +29,8 @@ class World {
     this.canvasWidth = canvasWidth;
     this.canvasHeight = canvasHeight;
     this.blockAsset = blockAsset;
-    this.chunkSize = chunkSize;
+    this.chunkSizeX = chunkSizeX;
+    this.chunkSizeY = chunkSizeY;
   }
 
   info() {
@@ -71,14 +73,14 @@ class World {
 
   renderWorld(offsetX=0, offsetY=0) {
     for (let i = 0; i < this.loadedChunks.length; i++) {
-        this.renderChunk(this.loadedChunks[i], offsetX+(i*this.chunkSize*this.blockSize), offsetY/*+(i*this.chunkSize*this.blockSize)*/);
+        this.renderChunk(this.loadedChunks[i], offsetX+(i*this.chunkSizeX*this.blockSize), offsetY);
     }
   }
   generateChunk(chunkNumber) {
     const chunkData = []; 
-    for (let y = 0; y < this.chunkSize; y++) {
+    for (let y = 0; y < this.chunkSizeY; y++) {
         let row = [];
-        for (let x = 0; x < this.chunkSize; x++) { 
+        for (let x = 0; x < this.chunkSizeX; x++) { 
             row.push(Math.floor(Math.random()*5)) //need to replace with actual block generation
         }
         chunkData.push(row);
