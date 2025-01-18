@@ -202,8 +202,8 @@ function start() {
         "CurrentChunk": Math.floor((Math.floor((camera.x)/ blockSize) * -1)/ chunkSizeX),
         "Loaded Chunk Numbers": world.getLoadedChunkNumbers(),
         "Camera Speed": camera.speed,
-        "Mouse Chunk": world.mousePosOverChunk(mouseX, camera),
-        "Mouse Pos over block": world.mousePosOverBlock(
+        "Mouse Chunk": world.objectPosOverChunk(mouseX, camera),
+        "Mouse Pos over block": world.objectPosOverBlock(
             Math.max(0, Math.min(mouseX, canvas.width)), 
             Math.max(0, Math.min(mouseY, canvas.height)),
             camera

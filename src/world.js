@@ -76,12 +76,12 @@ class World {
     });
   }
 
-  mousePosOverChunk(mouseX, camera) {
-    return Math.floor((camera.x - mouseX) / (this.chunkSizeX * this.blockSize)*-1)
+  objectPosOverChunk(objectX, camera) {
+    return Math.floor((camera.x - objectX) / (this.chunkSizeX * this.blockSize)*-1)
   }
-  mousePosOverBlock(mouseX, mouseY, camera) {
-    const worldX = (mouseX / this.blockSize) - (camera.x / this.blockSize);
-    const worldY = (mouseY / this.blockSize) - (camera.y / this.blockSize);
+  objectPosOverBlock(objectX, objectY, camera) {
+    const worldX = (objectX / this.blockSize) - (camera.x / this.blockSize);
+    const worldY = (objectY / this.blockSize) - (camera.y / this.blockSize);
 
     const blockX = Math.floor(worldX);
     const blockY = Math.floor(worldY);
@@ -90,10 +90,10 @@ class World {
 
     return [blockInChunkX, blockY]
   }
-  currentBlock(mouseX, mouseY, camera) {
+  currentBlock(objectX, objectY, camera) {
     try {
-      const mouseChunk = this.mousePosOverChunk(mouseX, camera);
-      const indexes = this.mousePosOverBlock(mouseX, mouseY, camera);
+      const mouseChunk = this.objectPosOverChunk(objectX, camera);
+      const indexes = this.objectPosOverBlock(objectX, objectY, camera);
       const x = indexes[0];
       const y = indexes[1];
       const index = this.loadedChunks.findIndex(chunk => chunk.chunkNumber === mouseChunk);
