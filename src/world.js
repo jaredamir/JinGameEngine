@@ -48,14 +48,14 @@ class World {
     this.loadedChunks.push(chunk);
   }
 
-  renderBackground() {
-    ctx.fillStyle = 'green'; 
+  renderBackground(color) {
+    ctx.fillStyle = color; 
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   }
 
   renderWorld(offsetX=0, offsetY=0) {
     for (let i = 0; i < this.loadedChunks.length; i++) {
-        this.renderChunk(this.loadedChunks[i], offsetX+(i*this.chunkSize*this.blockSize), offsetY+(i*this.chunkSize*this.blockSize));
+        this.renderChunk(this.loadedChunks[i], offsetX+(i*this.chunkSize*this.blockSize), offsetY/*+(i*this.chunkSize*this.blockSize)*/);
     }
   }
   generateChunk(chunkOrigin) {

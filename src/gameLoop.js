@@ -10,6 +10,8 @@ const ctx = canvas.getContext('2d');
 const xDirection = 1;
 const yDirection = 1;
 let paused = false;
+
+const debugInfo = document.getElementById('debugInfo');
 /*
 {
 camera: {
@@ -80,11 +82,14 @@ const chunk = {
 }
 
 let world;
+let debuggerInstance;
 let blockAsset;
 let offsetX = 0;
 let offsetY = 0;
 let cameraSpeed = 20;
 let camera;
+let mouseX;
+let mouseY;
 
 class Camera {
     constructor(x, y, speed) {
@@ -114,6 +119,13 @@ let states = {
 function pauseGame() {
     states.paused = !states.paused;
 }
+
+
+window.addEventListener('mousemove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    mouseX = e.clientX - rect.left;
+    mouseY = e.clientY - rect.top;
+});
 
 window.addEventListener('keydown', (e) => {
     if (e.key === 'p') {
@@ -152,19 +164,37 @@ function setUp() {
     loadAssets();
     camera = new Camera(0, 0, cameraSpeed);
     world = new World(ctx, 'world', origin, aspectRatio, blockSize, canvas.width, canvas.height, 0, blockAsset, chunkSize);
+    //debuggerInstance = new Debugger();
     geratedChunk = world.generateChunk({ x: 0, y: 0 });
+    geratedChunk2 = world.generateChunk({ x: 0, y: 0 });
     world.addChunk(chunk);
     world.addChunk(geratedChunk);
+    world.addChunk(geratedChunk2);
+    //debuggerInstance.add({"test": "test"});
     
-    console.log(world.info());
    return
 }
 
+function addDebugInfo(infoObject) {
+    debugInfo.innerHTML = Object.entries(infoObject)
+        .map(([key, value]) => `${key}: ${value}`)
+        .join('<br>');
+}
 function start() {
-    world.renderBackground();
+    world.renderBackground("black");
     //world.renderChunk(geratedChunk, camera.x, camera.y);
     world.renderWorld(camera.x, camera.y)
     cameraMove();
+    addDebugInfo({
+        "gameRunning": !paused,
+        "cameraX": camera.x,
+        "cameraY": camera.y,
+        "MouseX": Math.max(0, Math.min(mouseX, canvas.width)),
+        "MouseY": Math.max(0, Math.min(mouseY, canvas.height)),
+        "CurrentBlockX": Math.floor((camera.x)/ blockSize) * -1,
+        "CurrentBlockY": Math.floor((camera.y)/ blockSize) * -1,
+        "CurrentChunk": Math.floor((Math.floor((camera.x)/ blockSize) * -1)/ chunkSize),
+    });
     console.log("loop");
     if(!states.paused) requestAnimationFrame(start);
     return
