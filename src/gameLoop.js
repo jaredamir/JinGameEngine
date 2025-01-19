@@ -154,6 +154,16 @@ function initializeEventListeners() {
 
 }
 
+/*
+const keyBindings = {
+    "moveUp": cameraMove(),
+    "moveDown": cameraMove(),
+    "moveLeft": cameraMove(),
+    "moveRight": cameraMove(),
+    "deleteBlock": world.deleteBlock(),
+    "addBlock": world.addBlock(),
+}*/
+
 function cameraMove() {
     if (keys['ArrowUp']) {
         camera.changeY(yDirection);
