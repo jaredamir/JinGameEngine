@@ -131,6 +131,47 @@ class World {
         interactedItems: {}
     }
   } 
+  //neighbor blocks, y level, innate rarity, 
+  /*
+{
+  4: {
+        yLevel: (y) => x**2,  // dynamic factor: based on y-level
+        blocks: {
+            1: 3,
+            4: -3,
+            0: -10
+        },
+        innateRarity: 1  
+    },
+    0: {
+        yLevel: (y) => 0.5 * x ** -2,  
+        blocks: {
+            1: 5,
+            4: -10,
+            0: 5
+        },
+        innateRarity: 5  
+    }
+};
+        //find a way to make this object more scalable like a 2d matrix of items to show relationships
+        
+        y-level,         innaterarity,       0,              1,             2 ,   
+0.     (y) => x**2        (y) => 10       (y) => 15         (y) => 5    (y) => -3
+1.      .....
+2
+3
+
+    ** sum the results of each component to get the total chance (y_level answer + blocks + innate rarity)
+    ** Space inefficent method, add block number to array based on total chance (ex. air:  y_level answer + blocks + innate rarity = 15) => [0,0,0...15times] do that with all and then pick a number between 0 and len [] -1
+    ** efficent method: make an array of each ints probability, pick a random number between 0 and the sum of the array, subtract one from the number as many times as that index says
+
+  */
+
+  /*
+    Generation post processing:
+    -BFS cave making
+    -BFS liquid making
+  */
   deleteBlock(objectX, objectY, camera){
     try {
       const objectChunk = this.objectPosOverChunk(objectX, camera);

@@ -90,10 +90,10 @@ class Camera {
 }
 //Controls
 let keys = {
-    'ArrowUp': false,
-    'ArrowDown': false,
-    'ArrowLeft': false,
-    'ArrowRight': false
+    'w': false,
+    's': false,
+    'a': false,
+    'd': false
 }
 
 let states = {
@@ -165,22 +165,22 @@ const keyBindings = {
 }*/
 
 function cameraMove() {
-    if (keys['ArrowUp']) {
+    if (keys['w']) {
         camera.changeY(yDirection);
     }
-    if (keys['ArrowDown']) {
+    if (keys['s']) {
         camera.changeY(-yDirection);
     }
-    if (keys['ArrowLeft']) {
+    if (keys['a']) {
         camera.changeX(xDirection);
     }
-    if (keys['ArrowRight']) {
+    if (keys['d']) {
         camera.changeX(-xDirection);
     }
 }
 
 function cameraAcceleration(camera, keys) {
-    if (keys.ArrowLeft || keys.ArrowRight || keys.ArrowUp || keys.ArrowDown) {
+    if (keys.a || keys.d || keys.w || keys.s) {
         camera.speed += .05;
     } else { 
         camera.speed = baseCameraSpeed
