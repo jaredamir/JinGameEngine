@@ -42,6 +42,7 @@ class World {
       constant: (y) => 1,
       airProbability: (y) => Math.exp(-y / 5)
   };
+    this.rays = [];
   }
   //***DATA***
   info() {
@@ -213,6 +214,15 @@ class World {
     }
   }
 
+  //***RAYCASTING***/
+  addRay(starting_x, starting_y, rotation){
+    this.rays.push({
+      starting_x: starting_x,
+      starting_y: starting_y, 
+      rotation: rotation,
+    })
+  }
+
   //***RENDERING***/
   renderBackground(color) {
     ctx.fillStyle = color; 
@@ -284,4 +294,49 @@ class World {
        }
       }
     }
+  
+  renderRay(ray, degrees = true) {
+    let angle = 0;
+    if(degrees){
+      angle = ray.rotation * (Math.PI / 180); //turn to radians
+    } else {
+      angle = ray.rotation;
+    }
+    
+    let ref_length_x = this.canvasWidth - ray.starting_x;
+    let tan_y_height = Math.tan(angle) * ref_length_x;
+    let ref_length_y = Math.min(ray.starting_y, tan_y_height)
+    let tan_x_length = (1/ Math.tan(angle)) * ref_length_y;
+
+    let final_x = Math.min(ray.starting_x + tan_x_length, this.canvasWidth)
+    let final_y = Math.max(0, ray.starting_y - tan_y_height);
+
+
+    this.canvas.strokeStyle = "yellow";
+    this.canvas.lineWidth = 3;
+    this.canvas.beginPath();
+    this.canvas.moveTo(ray.starting_x, ray.starting_y)
+    this.canvas.lineTo(final_x, final_y)
+    this.canvas.stroke();
+
+    this.canvas.fillStyle = "red";
+    this.canvas.fillRect(final_x - 5, final_y - 5, 10, 10);
+
+
+    /*
+    x, y 
+    ref length =  line from starting point to the right edge of the screen
+      /|
+     / | opposite
+    /*_|
+    ref (adjacent)
+   
+    opposite should equal tan(angle) * ref (adjacent)
+    */
+  }
+  renderRayCasts(){
+    for (let ray of this.rays) {
+      this.renderRay(ray);
+    }
+  }
 }

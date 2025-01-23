@@ -317,6 +317,12 @@ function start() {
     cameraAcceleration(camera, keys);
 
     renderChunksOnEnter(world.getLoadedChunkNumbers());
+
+    world.renderRay({
+        starting_x: mouseX,
+        starting_y: mouseY,
+        rotation:60,
+    })
     if(!states.paused) requestAnimationFrame(start);
     return
 }
