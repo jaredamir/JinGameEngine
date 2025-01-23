@@ -62,7 +62,7 @@ class World {
     for (let y = 0; y < this.chunkSizeY; y++) {
         let row = [];
         for (let x = 0; x < this.chunkSizeX; x++) { 
-          //collect the neighbors of the current blocks 
+          //collect the neighbors of the current blocks **TODO: get neighboring blocks in other chunks**
             let blockNeighbors = [];
             if(x != 0) {blockNeighbors.push(row[x-1])}; //push left
             if(prevRow) { 

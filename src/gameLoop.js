@@ -4,13 +4,13 @@ const canvas = document.getElementById('game');
 const canvasWidth = canvas.width;
 const chunkSizeX = 10;
 const chunkSizeY = 400;
-const blockScale = 1;
+const blockScale = 0.5;
 const aspectRatio = 16 / 9;
 const blockSize = (canvasWidth / chunkSizeX) * blockScale;
 const ctx = canvas.getContext('2d');
 const xDirection = 1;
 const yDirection = 1;
-const renderDistance = 4;
+const renderDistance = 5;
 
 
 const debugInfo = document.getElementById('debugInfo');
@@ -26,7 +26,7 @@ const blockDetails_0_1 = {
     },
     2: {
         name: 'dirt',
-        color: 'grey',
+        color: '#F5F5DC',
         heathCapacity: 2,
         solid: true,
     },
@@ -54,7 +54,7 @@ const generationMap_0_1 = {
             3: -10, // power
             4: -20  // water
         },
-        innateRarity: 10 
+        innateRarity:10 
     },
     1: {
         yLevel: "parabola", 
@@ -198,6 +198,7 @@ function initializeEventListeners() {
 
     //key presses
     window.addEventListener('keydown', (e) => {
+        console.log
         if (e.key === 'p') {
             pauseGame();
         }
@@ -264,6 +265,9 @@ function renderChunksOnEnter(chunkNumbers) {
     if (chunkNumbers && !chunkNumbers.includes(currentChunk)) {
         world.addChunk(world.generateChunk(currentChunk));
     };
+    if (chunkNumbers && !chunkNumbers.includes(currentChunk + 1)) {
+        world.addChunk(world.generateChunk(currentChunk + 1));
+    }
 };
 
 
@@ -313,7 +317,6 @@ function start() {
     cameraAcceleration(camera, keys);
 
     renderChunksOnEnter(world.getLoadedChunkNumbers());
-    console.log("loop");
     if(!states.paused) requestAnimationFrame(start);
     return
 }
