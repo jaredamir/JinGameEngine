@@ -44,6 +44,62 @@ const blockDetails_0_1 = {
     }
 }
 
+const generationMap_0_1 = {
+    // Logic for Air blocks
+    0: {
+        yLevel: "airProbability", 
+        blocks: {
+            1: 5,   // stone
+            2: 3,   // dirt
+            3: -10, // power
+            4: -20  // water
+        },
+        innateRarity: 10 
+    },
+    1: {
+        yLevel: "parabola", 
+        blocks: {
+            1: 5,   // stone
+            2: 3,   // dirt
+            3: -10, // power
+            4: -20  // water
+        },
+        innateRarity: 8 
+    },
+    2: {
+        yLevel: "linear", // Logic for dirt blocks
+        blocks: {
+            1: -5,  // stone
+            2: 15,  // dirt
+            3: -20, // power
+            4: 5    // water
+        },
+        innateRarity: 6
+    },
+    3: {
+        yLevel: "inverseSquare", // Logic for power blocks
+        blocks: {
+            1: -10, // stone
+            2: -10, // dirt
+            3: 20,  // power
+            4: 0    // water
+        },
+        innateRarity: 1
+    },
+    4: {
+        yLevel: "constant", // Logic for water blocks
+        blocks: {
+            1: -15, // stone
+            2: 0,   // dirt
+            3: 5,   // power
+            4: 20   // water
+        },
+        innateRarity: 3
+    }
+};
+
+
+
 const chunk = {
     chunkNumber: 0,
     data: [
@@ -67,6 +123,7 @@ let paused = false;
 let world;
 let debuggerInstance;
 let blockAsset;
+let generationMap;
 let offsetX = 0;
 let offsetY = 0;
 let baseCameraSpeed = 20;
@@ -189,7 +246,9 @@ function cameraAcceleration(camera, keys) {
 
 
 function loadAssets(){
-    blockAsset = blockDetails_0_1; // Will replace with actual asset loading
+    // Will replace with actual asset loading
+    blockAsset = blockDetails_0_1; 
+    generationMap = generationMap_0_1;
 }
 
 
@@ -224,6 +283,7 @@ function setUp() {
         chunkSizeX, 
         chunkSizeY,
         renderDistance,
+        generationMap_0_1
     );
     initializeEventListeners()
    return

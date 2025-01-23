@@ -17,7 +17,8 @@ class World {
     blockAsset,
     chunkSizeX,
     chunkSizeY,
-    renderDistance, 
+    renderDistance,
+    generationMap, 
 ) {
     console.log("World Initiated");
     this.name = name;
@@ -33,8 +34,16 @@ class World {
     this.chunkSizeX = chunkSizeX;
     this.chunkSizeY = chunkSizeY;
     this.renderDistance = renderDistance;
+    this.generationMap = generationMap
+    this.variableGenerationFunctions = {
+      parabola: (y) => y ** 2,
+      linear: (y) => y,
+      inverseSquare: (y) => y !== 0 ? 1 / (y ** 2) : 0,
+      constant: (y) => 1,
+      airProbability: (y) => Math.exp(-y / 5)
+  };
   }
-  //DATA
+  //***DATA***
   info() {
     return {
       name: this.name,
@@ -46,7 +55,107 @@ class World {
       id: this.id,
     }
   }
+  //***CHUNKS***/
+  generateChunk(chunkNumber) {
+    const chunkData = []; 
+    let prevRow = null;
+    for (let y = 0; y < this.chunkSizeY; y++) {
+        let row = [];
+        for (let x = 0; x < this.chunkSizeX; x++) { 
+          //collect the neighbors of the current blocks 
+            let blockNeighbors = [];
+            if(x != 0) {blockNeighbors.push(row[x-1])}; //push left
+            if(prevRow) { 
+              if(x != 0) {blockNeighbors.push(prevRow[x-1])}; //push top left
+              blockNeighbors.push(prevRow[x]) //push top
+              if(x != this.chunkSizeX) {blockNeighbors.push(prevRow[x+1])}; //push top right
+            }
+            //add generated block using weighted generation
+            row.push(this.getWeightedRandomBlock(y, blockNeighbors));
+        }
+        chunkData.push(row);
+        //store row as previous row
+        prevRow = row;
+    }
+    return {
+        chunkNumber: chunkNumber,
+        data: chunkData,
+        interactedItems: {}
+    }
+  } 
+  getBlockWeight(block, current_y_level, neighbors){
+    let weight = this.generationMap[block].innateRarity;
+    let yFunction = this.variableGenerationFunctions[this.generationMap[block].yLevel];
+    weight += Math.ceil(yFunction(current_y_level));
+    for (let neighboringBlock of neighbors) {
+      //if the block we're looking at is affected by the specific neighbor block
+      if(Object.keys(this.generationMap[block]?.blocks).includes(neighboringBlock?.toString())){
+        weight+= parseInt(this.generationMap[block].blocks[neighboringBlock.toString()]);
+      }
+    };
+    //constrain it to a max of 100 chance and avoid returning a negative
+    return weight > 0 ? Math.min(weight, 100) : 0; 
+  }
 
+  getWeightedRandomBlock(y_level, neighbors){
+    let weights = []
+    //push the weight of each block into the weights array using the get weight function
+    for (let block of Object.keys(this.generationMap)) {
+      weights.push(this.getBlockWeight(block, y_level, neighbors));
+    }
+    //get the total and choose a random number between 0 and that sum
+    let weightsTotal = weights.reduce((total, weight) => total + weight, 0);
+    
+    let randomInt = Math.floor(Math.random() * weightsTotal + 1);
+    //keep subtracting the weight of each until it hits zero, which ever index it is on is the chosen index
+    let index = 0;
+    while (randomInt > 0) {
+      randomInt -= weights[index]
+      if (randomInt > 0) {index += 1};
+    }
+    return index;
+  }
+  //neighbor blocks, y level, innate rarity, 
+  /*
+{
+  4: {
+        yLevel: (y) => x**2,  // dynamic factor: based on y-level
+        blocks: {
+            1: 3,
+            4: -3,
+            0: -10
+        },
+        innateRarity: 1  
+    },
+    0: {
+        yLevel: (y) => 0.5 * x ** -2,  
+        blocks: {
+            1: 5,
+            4: -10,
+            0: 5
+        },
+        innateRarity: 5  
+    }
+};
+        //find a way to make this object more scalable like a 2d matrix of items to show relationships
+        
+        y-level,         innaterarity,       0,              1,             2 ,   
+0.     (y) => x**2        (y) => 10       (y) => 15         (y) => 5    (y) => -3
+1.      .....
+2
+3
+
+    ** sum the results of each component to get the total chance (y_level answer + blocks + innate rarity)
+    ** Space inefficent method, add block number to array based on total chance (ex. air:  y_level answer + blocks + innate rarity = 15) => [0,0,0...15times] do that with all and then pick a number between 0 and len [] -1
+    ** efficent method: make an array of each ints probability, pick a random number between 0 and the sum of the array, subtract one from the number as many times as that index says
+
+  */
+
+  /*
+    Generation post processing:
+    -BFS cave making
+    -BFS liquid making
+  */
   addChunk(chunk) {
     if (this.loadedChunks.length > 0 ) {
       //if there is a chunk and the chunk is less than the first one in the array, add to the beginning, else, add to the end
@@ -104,8 +213,7 @@ class World {
     }
   }
 
-  //RENDERING
-
+  //***RENDERING***/
   renderBackground(color) {
     ctx.fillStyle = color; 
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -116,62 +224,7 @@ class World {
         this.renderChunk(this.loadedChunks[i], offsetX+(this.loadedChunks[i].chunkNumber*this.chunkSizeX*this.blockSize), offsetY);
     }
   }
-  generateChunk(chunkNumber) {
-    const chunkData = []; 
-    for (let y = 0; y < this.chunkSizeY; y++) {
-        let row = [];
-        for (let x = 0; x < this.chunkSizeX; x++) { 
-            row.push(Math.floor(Math.random()*5)) //need to replace with actual block generation
-        }
-        chunkData.push(row);
-    }
-    return {
-        chunkNumber: chunkNumber,
-        data: chunkData,
-        interactedItems: {}
-    }
-  } 
-  //neighbor blocks, y level, innate rarity, 
-  /*
-{
-  4: {
-        yLevel: (y) => x**2,  // dynamic factor: based on y-level
-        blocks: {
-            1: 3,
-            4: -3,
-            0: -10
-        },
-        innateRarity: 1  
-    },
-    0: {
-        yLevel: (y) => 0.5 * x ** -2,  
-        blocks: {
-            1: 5,
-            4: -10,
-            0: 5
-        },
-        innateRarity: 5  
-    }
-};
-        //find a way to make this object more scalable like a 2d matrix of items to show relationships
-        
-        y-level,         innaterarity,       0,              1,             2 ,   
-0.     (y) => x**2        (y) => 10       (y) => 15         (y) => 5    (y) => -3
-1.      .....
-2
-3
-
-    ** sum the results of each component to get the total chance (y_level answer + blocks + innate rarity)
-    ** Space inefficent method, add block number to array based on total chance (ex. air:  y_level answer + blocks + innate rarity = 15) => [0,0,0...15times] do that with all and then pick a number between 0 and len [] -1
-    ** efficent method: make an array of each ints probability, pick a random number between 0 and the sum of the array, subtract one from the number as many times as that index says
-
-  */
-
-  /*
-    Generation post processing:
-    -BFS cave making
-    -BFS liquid making
-  */
+  
   deleteBlock(objectX, objectY, camera){
     try {
       const objectChunk = this.objectPosOverChunk(objectX, camera);
