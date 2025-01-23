@@ -21,6 +21,12 @@ class Block extends Entity {
     }
 
     render(canvas, blockSize) {
+        /* Glow for later
+        canvas.shadowColor = 'rgba(0, 0, 0, 0.2)'; 
+        canvas.shadowBlur = 20; // Amount of blur
+        canvas.shadowOffsetX = 0; // No horizontal offset
+        canvas.shadowOffsetY = 0; // No vertical offset
+        */
         canvas.fillStyle = this.color;
         canvas.fillRect(this.x, this.y, blockSize, blockSize);
     }
