@@ -302,15 +302,20 @@ class World {
     } else {
       angle = ray.rotation;
     }
-    
-    let ref_length_x = this.canvasWidth - ray.starting_x;
-    let tan_y_height = Math.tan(angle) * ref_length_x;
-    let ref_length_y = Math.min(ray.starting_y, tan_y_height)
-    let tan_x_length = (1/ Math.tan(angle)) * ref_length_y;
+    /*
+    let ref_length_x = this.canvasWidth - ray.starting_x; //get the ref line which goes from point to the right edge horizontally
+    let tan_y_height = Math.tan(angle) * ref_length_x; // get the height using tan:  (opposite / adjacent) * adjacent
+    let ref_length_y = Math.min(ray.starting_y, tan_y_height) //constrain the height
+    let tan_x_length = (1 / Math.tan(angle)) * ref_length_y; // if y is constrained, get the new x using cotan:  (adjacent / opposite) * opposite
 
-    let final_x = Math.min(ray.starting_x + tan_x_length, this.canvasWidth)
+    let final_x = Math.min(ray.starting_x + tan_x_length , this.canvasWidth)
     let final_y = Math.max(0, ray.starting_y - tan_y_height);
-
+    */
+    let ref_length_x = this.canvasWidth - ray.starting_x; //get the ref line which goes from point to the right edge horizontally
+    let y_height = Math.tan(angle) * ref_length_x
+    let final_y = Math.min(this.canvasHeight, Math.max(0, (ray.starting_y - y_height)))
+    let x_width = (1 / Math.tan(angle) * (ray.starting_y - final_y))
+    let final_x = Math.min(this.canvasWidth, Math.max(0, ray.starting_x + x_width))
 
     this.canvas.strokeStyle = "yellow";
     this.canvas.lineWidth = 3;
@@ -320,7 +325,7 @@ class World {
     this.canvas.stroke();
 
     this.canvas.fillStyle = "red";
-    this.canvas.fillRect(final_x - 5, final_y - 5, 10, 10);
+    //this.canvas.fillRect(final_x - 5, final_y - 5, 10, 10);
 
 
     /*

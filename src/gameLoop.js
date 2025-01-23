@@ -321,7 +321,7 @@ function start() {
     world.renderRay({
         starting_x: mouseX,
         starting_y: mouseY,
-        rotation:60,
+        rotation: 130,
     })
     if(!states.paused) requestAnimationFrame(start);
     return
