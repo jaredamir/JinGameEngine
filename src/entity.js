@@ -24,6 +24,15 @@ class Entity {
     }
   }
 
+  createRayPoints(){
+    //const numberOfPointsHeight = Math.floor(this.height / this.blockSize) + 1;
+    //const numberOfPointWidth = Math.floor(this.width / this.blockSize) + 1;
+    //
+    //(pointNumber * this.height) / (numberOfPointsHeight - 1) //Do for left side and right side
+    //(pointNumber * this.width) / (numberOfPointWidth - 1) //Do for top and bottom
+    return
+  }
+
   damage(amount) {
     if (this.health - amount <= 0) {
         this.health -= amount;
