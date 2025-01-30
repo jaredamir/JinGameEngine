@@ -1,6 +1,8 @@
 //export 
 class Entity {
-  constructor(x, y, name, healthCapacity, regenerationRate) {
+  constructor(x, y, name, healthCapacity, regenerationRate, width, height, currentChunk) {
+    this.width = width;
+    this.height = height;
     this.id = Math.random();
     this.x = x;
     this.y = y;
@@ -8,6 +10,7 @@ class Entity {
     this.healthCapacity = healthCapacity;
     this.health = healthCapacity;
     this.regenerationRate = regenerationRate;
+    this.currentChunk = currentChunk;
   }
   
   info() {
@@ -29,4 +32,8 @@ class Entity {
     }
   }
   
+  render(canvas, offsetX, offsetY) {
+    canvas.fillStyle = "red";
+    canvas.fillRect(this.x + offsetX, this.y + offsetY, this.width, this.height);
+}
 }

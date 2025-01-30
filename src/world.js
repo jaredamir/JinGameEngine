@@ -43,6 +43,7 @@ class World {
       airProbability: (y) => Math.exp(-y / 5)
   };
     this.rays = [];
+    this.entities = [];
   }
   //***DATA***
   info() {
@@ -209,6 +210,27 @@ class World {
       const index = this.loadedChunks.findIndex(chunk => chunk.chunkNumber === objectChunk);
       return this.loadedChunks[index].data[y][x]
     } catch (e) {
+      //console.log(e)
+      return "could not find"
+    }
+  }
+  currentEntity(objectX, objectY, camera) {
+    try {
+      const relativeX = objectX - camera.x 
+      const relativeY = objectY - camera.y 
+      console.log(relativeX, relativeY)
+      for (let entity of this.entities){
+        if (relativeX >= entity.x 
+            && relativeX <= entity.x + entity.width
+            && relativeY >= entity.y 
+            && relativeY <= entity.y + entity.height
+          ){
+
+          return entity
+        }
+      }
+      return null;
+    } catch (e) {
       console.log(e)
       return "could not find"
     }
@@ -222,6 +244,12 @@ class World {
       rotation: rotation,
     })
   }
+  //***Entities***/
+  addPlayer(x, y, name, inventory, speed, healthCapacity, regenerationRate, health, width, height){
+    const player = new Player(x, y, name, inventory, speed, healthCapacity, regenerationRate, health, width, height)
+    this.entities.push(player);
+    console.log(player, this.entities)
+  }
 
   //***RENDERING***/
   renderBackground(color) {
@@ -231,8 +259,15 @@ class World {
 
   renderWorld(offsetX=0, offsetY=0) {
     for (let i = 0; i < this.loadedChunks.length; i++) {
-        this.renderChunk(this.loadedChunks[i], offsetX+(this.loadedChunks[i].chunkNumber*this.chunkSizeX*this.blockSize), offsetY);
-    }
+      this.renderChunk(this.loadedChunks[i], offsetX+(this.loadedChunks[i].chunkNumber*this.chunkSizeX*this.blockSize), offsetY);
+    };
+    this.entities.forEach((entity) => {
+      try{
+        entity.render(this.canvas, offsetX, offsetY); 
+      } catch (e) {
+        console.error(e);
+      }
+    })
   }
   
   deleteBlock(objectX, objectY, camera){
@@ -294,7 +329,33 @@ class World {
        }
       }
     }
-  
+  isColliding(points, camera) {
+    //points [x,y]
+    if (points[0] <= 0 || points[0] >= this.canvasWidth || points[1] <= 0 || points[1] >= this.canvasHeight ) {
+      return true;
+    }
+    if (this.currentBlock(points[0], points[1], camera) == 0) {
+      return false
+    }
+    return true
+  }
+
+  renderRay2(ray, degrees = true, camera) {
+    if (this.isColliding([ray.starting_x, ray.starting_y], camera)) {return }
+    let angle = 0;
+    if(degrees){
+      angle = ray.rotation * (Math.PI / 180); //turn to radians
+    } else {
+      angle = ray.rotation;
+    }
+    /*go block by block and check if something is in that area*/
+
+    /*
+    1. determine where in the world the starting position is in
+    2. 
+    */
+
+  }
   renderRay(ray, degrees = true) {
     let angle = 0;
     if(degrees){
@@ -325,7 +386,7 @@ class World {
     this.canvas.stroke();
 
     this.canvas.fillStyle = "red";
-    //this.canvas.fillRect(final_x - 5, final_y - 5, 10, 10);
+    this.canvas.fillRect(final_x - 5, final_y - 5, 10, 10);
 
 
     /*

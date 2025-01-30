@@ -32,16 +32,16 @@ const blockDetails_0_1 = {
     },
     3: {
         name: 'power',
-        color: 'purple',
+        color: '#8A2BE2',  // Saturated purple
         heathCapacity: 15,
         solid: true,
     },
     4: {
         name: 'water',
-        color: 'blue',
+        color: '#4682B4',  // Deep muted blue
         heathCapacity: 5,
         solid: false,
-    }
+    },
 }
 
 const generationMap_0_1 = {
@@ -224,10 +224,12 @@ const keyBindings = {
 
 function cameraMove() {
     if (keys['w']) {
-        camera.changeY(yDirection);
+        //Block camera from going above world height
+        if(camera.y < 0) {camera.changeY(yDirection);};
     }
     if (keys['s']) {
-        camera.changeY(-yDirection);
+        //Block camera from going below world height
+        if(camera.y > (chunkSizeY * blockSize * -1) + canvas.height) {camera.changeY(-yDirection);};
     }
     if (keys['a']) {
         camera.changeX(xDirection);
@@ -270,6 +272,37 @@ function renderChunksOnEnter(chunkNumbers) {
     }
 };
 
+function drawTextBox(x, y, text) {
+    ctx.font = '16px Arial'; 
+    // Split the text into lines
+    const lines = text.split('\n'); // Split on the newline character "\n"
+    // Measure the maximum width of the lines
+    const boxPadding = 10; 
+    const lineHeight = 24; 
+    const maxLineWidth = Math.max(...lines.map(line => ctx.measureText(line).width)); 
+    const boxWidth = maxLineWidth + boxPadding * 2; 
+    const boxHeight = lineHeight * lines.length + boxPadding * 2; 
+
+    // Create a radial gradient
+    const gradient = ctx.createRadialGradient(x + boxWidth / 2, y + boxHeight / 2, 0, x + boxWidth / 2, y + boxHeight / 2, boxWidth);
+    gradient.addColorStop(0, 'rgba(46, 0, 62, 0.8)'); // Start color (transparent dark purple)
+    gradient.addColorStop(1, 'rgba(0, 0, 0, 0.8)'); // End color (transparent black)
+
+    ctx.fillStyle = gradient;
+    ctx.fillRect(x, y, boxWidth, boxHeight); // Fill the box
+
+    ctx.strokeStyle = '#000'; // Border color
+    ctx.lineWidth = 2;
+    ctx.strokeRect(x, y, boxWidth, boxHeight); // Draw the border
+
+    ctx.fillStyle = 'white'; // Set text color to white
+
+    // Draw each line inside the box
+    lines.forEach((line, index) => {
+        ctx.fillText(line, x + boxPadding, y + boxPadding + (index + 1) * lineHeight); // Draw each line
+    });
+}
+
 
 function setUp() {
     loadAssets();
@@ -289,11 +322,12 @@ function setUp() {
         renderDistance,
         generationMap_0_1
     );
+    world.addPlayer(0,0, "Jin", [], 5, 10, 1, 10, blockSize, blockSize*2);
     initializeEventListeners()
    return
 }
 function start() {
-    world.renderBackground("lightblue");
+    world.renderBackground("#708090");
     world.renderWorld(camera.x, camera.y)
     cameraMove();
     addDebugInfo({
@@ -312,17 +346,41 @@ function start() {
             camera
         ),
         "current Block index": world.currentBlock(mouseX, mouseY, camera),
-        "current Block name": blockAsset[world.currentBlock(mouseX, mouseY, camera)]?.name
+        "current Block name": blockAsset[world.currentBlock(mouseX, mouseY, camera)]?.name,
+        "isColliding": world.isColliding([mouseX, mouseY], camera),
+        "currentEntity": world.currentEntity(mouseX, mouseY, camera),
     });
+    const currentEntity = world.currentEntity(mouseX, mouseY, camera);
+    if(currentEntity){
+        const innerText = Object.entries(currentEntity.info())
+        .map(([key, value]) => `${key}: ${value}`)
+        .join('\n');
+        drawTextBox(
+            (currentEntity.x + camera.x), 
+            (currentEntity.y + currentEntity.height + camera.y), 
+            innerText
+        )
+        
+    }
+    
     cameraAcceleration(camera, keys);
 
     renderChunksOnEnter(world.getLoadedChunkNumbers());
-
+    // let rayAngles = [30, 150, 210, 330];
+    // rayAngles.forEach((angle) => {
+    //     world.renderRay({
+    //         starting_x: mouseX,
+    //         starting_y: mouseY,
+    //         rotation: angle,
+    //     })
+    // })
+    /*
     world.renderRay({
         starting_x: mouseX,
         starting_y: mouseY,
         rotation: 130,
-    })
+    })*/
+   
     if(!states.paused) requestAnimationFrame(start);
     return
 }

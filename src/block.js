@@ -29,6 +29,8 @@ class Block extends Entity {
         */
         canvas.fillStyle = this.color;
         canvas.fillRect(this.x, this.y, blockSize, blockSize);
+        // canvas.fillStyle = "red"
+        // canvas.fillRect(this.x + blockSize/2, this.y + blockSize/2, blockSize/6, blockSize/6);
     }
 }
 

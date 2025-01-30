@@ -2,8 +2,8 @@
 
 //export 
 class Player extends Entity {
-  constructor(x, y, name, speed, healthCapacity, regenerationRate) {
-    super(x, y, name, healthCapacity, inventory, regenerationRate, health); 
+  constructor(x, y, name, inventory, speed, healthCapacity, regenerationRate, health, width, height, currentChunk) {
+    super(x, y, name, healthCapacity, regenerationRate, width, height, currentChunk); 
     this.type = "player";
     this.speed = speed;
     this.inventory = inventory;
@@ -20,9 +20,5 @@ class Player extends Entity {
       health: this.health 
     };
 
-  }
-
-  render() {
-    return 
   }
 }
